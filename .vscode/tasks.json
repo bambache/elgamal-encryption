@@ -19,13 +19,18 @@
 			"label": "Rust: cargo build"
 		},
 		{
-			"type": "cargo",
+			"type": "shell",
 			"options": {
 				"env": {
 					"OPENSSL_DIR": "D:\\OpenSSL-Win64"
 				}
 			},
-			"subcommand": "test",
+			"command": "cargo",
+			"args": [
+				"test",
+				"--",
+				"--nocapture"
+			],
 			"problemMatcher": [
 				"$rustc"
 			],

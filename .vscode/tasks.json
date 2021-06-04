@@ -1,0 +1,36 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cargo",
+			"options": {
+				"env": {
+					"OPENSSL_DIR": "D:\\OpenSSL-Win64"
+				}
+			},
+			"subcommand": "build",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "Rust: cargo build"
+		},
+		{
+			"type": "cargo",
+			"options": {
+				"env": {
+					"OPENSSL_DIR": "D:\\OpenSSL-Win64"
+				}
+			},
+			"subcommand": "test",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": "test",
+			"label": "Rust: cargo test"
+		}
+	]
+}

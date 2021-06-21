@@ -145,6 +145,32 @@ pub fn encrypt(key: &keys::PublicKey, message: &str) -> Result<keys::Cipher> {
     ))
 }
 
+pub fn decrypt(key: &keys::PrivateKey, cipher: &keys::Cipher) -> Result<String> {
+    let p = BigNum::from_dec_str(&key.p)?;
+    // let g = BigNum::from_dec_str(&key.g)?;
+    let x = BigNum::from_dec_str(&key.x)?;
+
+    let two = BigNum::from_u32(2)?;
+    let p_2 = &p - &two;
+
+    let mut c1 = BigNum::from_dec_str(&cipher.c1)?;
+    let c2 = BigNum::from_dec_str(&cipher.c2)?;
+
+    // s = c1^x mod p
+    let mut ctx = BigNumContext::new()?;
+    let mut s = BigNum::new()?;
+    s.mod_exp(&c1, &x, &p, &mut ctx)?;
+
+    // m = (c2 * s^-1) mod p
+    // which is the same with:
+    // m = (c2 * s^(p-2)) mod p
+    c1.mod_exp(&s, &p_2, &p, &mut ctx)?; // reuse c1 to store modexp
+    let mut res = BigNum::new()?;
+    res.mod_mul(&c2, &c1, &p, &mut ctx)?;
+
+    Ok(res.to_dec_str()?.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -179,10 +205,13 @@ mod tests {
         ];
 
         for test in encryption_tests.iter() {
-            let (public_key, _private_key) = generate_keys(test.bits).unwrap();
+            let (public_key, private_key) = generate_keys(test.bits).unwrap();
             let cipher = encrypt(&public_key, &test.message).unwrap();
             println!("{:?}", public_key);
             println!("{:?}", cipher);
+            let decrypted = decrypt(&private_key, &cipher).unwrap();
+            println!("{:?}", decrypted);
+            assert_eq!(test.message, decrypted);
         }
     }
 }

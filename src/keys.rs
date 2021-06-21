@@ -46,8 +46,8 @@ pub fn check(pair: (PublicKey, PrivateKey)) -> bool {
 
 #[derive(Debug)]
 pub struct Cipher {
-    c1: String,
-    c2: String,
+    pub c1: String,
+    pub c2: String,
 }
 
 impl Cipher {

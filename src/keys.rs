@@ -1,8 +1,8 @@
 #[derive(Debug)]
 pub struct PublicKey {
-    p: String,
-    g: String,
-    h: String,
+    pub p: String,
+    pub g: String,
+    pub h: String,
 }
 
 impl PublicKey {
@@ -20,9 +20,9 @@ impl PublicKey {
 
 #[derive(Debug)]
 pub struct PrivateKey {
-    p: String,
-    g: String,
-    x: String,
+    pub p: String,
+    pub g: String,
+    pub x: String,
 }
 
 impl PrivateKey {
@@ -42,4 +42,22 @@ pub fn check(pair: (PublicKey, PrivateKey)) -> bool {
     let (public_key, private_key) = pair;
 
     public_key.p == private_key.p && public_key.g == private_key.g && public_key.h != private_key.x
+}
+
+#[derive(Debug)]
+pub struct Cipher {
+    c1: String,
+    c2: String,
+}
+
+impl Cipher {
+    pub fn empty() -> Cipher {
+        Cipher {
+            c1: String::new(),
+            c2: String::new(),
+        }
+    }
+    pub fn new(c1: String, c2: String) -> Cipher {
+        Cipher { c1: c1, c2: c2 }
+    }
 }

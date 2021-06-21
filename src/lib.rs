@@ -112,14 +112,77 @@ pub fn generate_keys(bits: i32) -> Result<(keys::PublicKey, keys::PrivateKey)> {
     ))
 }
 
+pub fn encrypt(key: &keys::PublicKey, message: &str) -> Result<keys::Cipher> {
+    let p = BigNum::from_dec_str(&key.p)?;
+    let g = BigNum::from_dec_str(&key.g)?;
+    let h = BigNum::from_dec_str(&key.h)?;
+
+    let m = BigNum::from_dec_str(&message)?;
+    let one = BigNum::from_u32(1)?;
+
+    // m must be 0 < m <= p
+    if m.lt(&one) == true || m.gt(&p) == true {
+        return Err(ElgamalError::InvalidArgument);
+    }
+
+    // pick random r from [0, p-1)
+    let p_1 = &p - &one;
+    let mut r = BigNum::new()?;
+    p_1.rand_range(&mut r)?;
+    // c1 = g^r mod p
+    let mut ctx = BigNumContext::new()?;
+    let mut c1 = BigNum::new()?;
+    c1.mod_exp(&g, &r, &p, &mut ctx)?;
+    // c2 = (h^r * m) mod p
+    let mut c2_temp = BigNum::new()?;
+    c2_temp.mod_exp(&h, &r, &p, &mut ctx)?;
+    let mut c2 = BigNum::new()?;
+    c2.mod_mul(&c2_temp, &m, &p, &mut ctx)?;
+
+    Ok(keys::Cipher::new(
+        c1.to_dec_str()?.to_string(),
+        c2.to_dec_str()?.to_string(),
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn it_works_2() {
+    fn test_generate_keys() {
         let (public_key, private_key) = generate_keys(6).unwrap();
         println!("{:?}", public_key);
         println!("{:?}", private_key);
         assert_eq!(keys::check((public_key, private_key)), true);
+    }
+
+    struct EncryptionTest {
+        bits: i32,
+        message: String,
+    }
+
+    #[test]
+    fn test_encrypt() {
+        let encryption_tests = [
+            EncryptionTest {
+                bits: 6,
+                message: "27".to_string(),
+            },
+            EncryptionTest {
+                bits: 8,
+                message: "127".to_string(),
+            },
+            EncryptionTest {
+                bits: 47,
+                message: "595858478".to_string(),
+            },
+        ];
+
+        for test in encryption_tests.iter() {
+            let (public_key, _private_key) = generate_keys(test.bits).unwrap();
+            let cipher = encrypt(&public_key, &test.message).unwrap();
+            println!("{:?}", public_key);
+            println!("{:?}", cipher);
+        }
     }
 }

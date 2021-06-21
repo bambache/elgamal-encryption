@@ -5,7 +5,9 @@
 			"type": "cargo",
 			"options": {
 				"env": {
-					"OPENSSL_DIR": "D:\\OpenSSL-Win64"
+					"OPENSSL_DIR": "D:/OpenSSL-Win64",
+					"OPENSSL_INCLUDE_DIR": "D:/OpenSSL-Win64/include",
+					"OPENSSL_LIB_DIR": "D:/OpenSSL-Win64/lib",
 				}
 			},
 			"subcommand": "build",
@@ -22,7 +24,9 @@
 			"type": "shell",
 			"options": {
 				"env": {
-					"OPENSSL_DIR": "D:\\OpenSSL-Win64"
+					"OPENSSL_DIR": "D:/OpenSSL-Win64",
+					"OPENSSL_INCLUDE_DIR": "D:/OpenSSL-Win64/include",
+					"OPENSSL_LIB_DIR": "D:/OpenSSL-Win64/lib",
 				}
 			},
 			"command": "cargo",
